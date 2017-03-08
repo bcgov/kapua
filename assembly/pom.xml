@@ -9,27 +9,26 @@
     Contributors:
         Eurotech - initial API and implementation
         Red Hat Inc
-   
  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-        <artifactId>kapua</artifactId>
-        <groupId>org.eclipse.kapua</groupId>
-        <version>0.2.0-SNAPSHOT</version>
-    </parent>
+		<artifactId>kapua</artifactId>
+		<groupId>org.eclipse.kapua</groupId>
+		<version>0.2.0-SNAPSHOT</version>
+	</parent>
 
 	<artifactId>kapua-assembly</artifactId>
 	<name>${project.artifactId}</name>
 
-    <properties>
+	<properties>
 		<tomcat.version>8.0.38</tomcat.version>
-        <commons.pool.version>2.3</commons.pool.version>
+		<commons.pool.version>2.3</commons.pool.version>
 
 		<docker.account>kapua</docker.account>
 		<java.base.image>openjdk:8u111-jre-alpine</java.base.image>
-    </properties>
+	</properties>
 
 	<dependencies>
 		<!-- console and api dependency -->
@@ -256,13 +255,13 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.6</version>
+				<version>3.0.0</version>
 				<executions>
 					<execution>
 						<id>kapua-broker</id>
 						<phase>package</phase>
 						<goals>
-							<goal>attached</goal>
+							<goal>single</goal>
 						</goals>
 						<configuration>
 							<descriptors>
@@ -277,7 +276,7 @@
 						<id>kapua-console</id>
 						<phase>package</phase>
 						<goals>
-							<goal>attached</goal>
+							<goal>single</goal>
 						</goals>
 						<configuration>
 							<descriptors>
@@ -292,7 +291,7 @@
 						<id>kapua-api</id>
 						<phase>package</phase>
 						<goals>
-							<goal>attached</goal>
+							<goal>single</goal>
 						</goals>
 						<configuration>
 							<descriptors>
@@ -307,7 +306,7 @@
 						<id>kapua-cucumber-report</id>
 						<phase>package</phase>
 						<goals>
-							<goal>attached</goal>
+							<goal>single</goal>
 						</goals>
 						<configuration>
 							<descriptors>
@@ -550,14 +549,59 @@
 				<groupId>io.fabric8</groupId>
 				<artifactId>docker-maven-plugin</artifactId>
 				<configuration>
+					
 					<images>
 						<image>
 							<name>${docker.account}/java-base</name>
 							<build>
 								<from>${java.base.image}</from>
 								<runCmds>
-									<runCmd>adduser -D -g "Eclipse Kapua" kapua</runCmd>
+									<runCmd><![CDATA[
+									apk update && apk add curl && \
+									adduser -D -g "Eclipse Kapua" kapua && \
+									curl -s https://repo1.maven.org/maven2/org/jolokia/jolokia-jvm/1.3.4/jolokia-jvm-1.3.4-agent.jar -o /jolokia-jvm-agent.jar
+									]]></runCmd>
 								</runCmds>
+							</build>
+						</image>
+						<image>
+							<name>${docker.account}/kapua-sql</name>
+							<build>
+								<from>${docker.account}/java-base</from>
+								<runCmds>
+									<runCmd><![CDATA[
+									mkdir -p /var/h2/data && \
+									chown kapua:kapua /var/h2/data && \
+									chmod a+rw /var/h2/data && \
+									cd /home/kapua && \
+									curl -s http://repo2.maven.org/maven2/com/h2database/h2/1.4.193/h2-1.4.193.jar -o h2.jar
+									]]></runCmd>
+								</runCmds>
+								<volumes>
+									<volume>/var/h2/data</volume>
+								</volumes>
+								<ports>
+									<port>3306</port>
+									<port>8181</port>
+									<port>8778</port>
+								</ports>
+								<user>kapua</user>
+								<entryPoint>
+									<exec>
+										<arg>/usr/bin/java</arg>
+										<arg>-javaagent:/jolokia-jvm-agent.jar</arg>
+										<arg>-cp</arg><arg>/home/kapua/h2.jar</arg>
+										<arg>org.h2.tools.Server</arg>
+										<arg>-web</arg>
+										<arg>-webAllowOthers</arg>
+										<arg>-webPort</arg><arg>8181</arg>
+										<arg>-tcp</arg>
+										<arg>-tcpAllowOthers</arg>
+										<arg>-tcpPort</arg><arg>3306</arg>
+										<arg>-baseDir</arg>
+										<arg>/var/h2/data</arg>
+									</exec>
+								</entryPoint>
 							</build>
 						</image>
 						<image>
@@ -655,12 +699,6 @@
 									find /maven -type d -exec chmod a+x {} +
 									]]></run>
 								</runCmds>
-							</build>
-						</image>
-						<image>
-							<name>${docker.account}/kapua-sql</name>
-							<build>
-								<dockerFileDir>sql</dockerFileDir>
 							</build>
 						</image>
 					</images>

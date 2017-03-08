@@ -9,11 +9,13 @@
  * Contributors:
  *     Eurotech - initial API and implementation
  *     Red Hat Inc
- *
  *******************************************************************************/
 package org.eclipse.kapua.locator.guice;
 
-import com.google.inject.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.kapua.KapuaRuntimeException;
 import org.eclipse.kapua.locator.KapuaLocator;
 import org.eclipse.kapua.locator.KapuaLocatorErrorCodes;
@@ -22,15 +24,17 @@ import org.eclipse.kapua.service.KapuaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.google.inject.Binding;
+import com.google.inject.ConfigurationException;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Key;
 
 /**
  * Kapua locator implementation bases on Guice framework
- * 
+ *
  * @since 1.0
- * 
+ *
  */
 public class GuiceLocatorImpl extends KapuaLocator {
 
@@ -52,7 +56,7 @@ public class GuiceLocatorImpl extends KapuaLocator {
         try {
             return injector.getInstance(serviceClass);
         } catch (ConfigurationException e) {
-            throw new KapuaRuntimeException(KapuaLocatorErrorCodes.SERVICE_UNAVAILABLE, serviceClass);
+            throw new KapuaRuntimeException(KapuaLocatorErrorCodes.SERVICE_UNAVAILABLE, e, serviceClass);
         }
     }
 
@@ -69,11 +73,12 @@ public class GuiceLocatorImpl extends KapuaLocator {
 
     @Override
     public List<KapuaService> getServices() {
-        List<KapuaService> servicesList = new ArrayList<>();
-        Map<Key<?>, Binding<?>> bindings = injector.getBindings();
-        for (Binding binding : bindings.values()) {
-            if (KapuaService.class.isAssignableFrom(binding.getKey().getTypeLiteral().getRawType())) {
-                servicesList.add(injector.getInstance((Class<KapuaService>)binding.getKey().getTypeLiteral().getRawType()));
+        final List<KapuaService> servicesList = new ArrayList<>();
+        final Map<Key<?>, Binding<?>> bindings = injector.getBindings();
+        for (Binding<?> binding : bindings.values()) {
+            final Class<?> clazz = binding.getKey().getTypeLiteral().getRawType();
+            if (KapuaService.class.isAssignableFrom(clazz)) {
+                servicesList.add(injector.getInstance(clazz.asSubclass(KapuaService.class)));
             }
         }
         return servicesList;

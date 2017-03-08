@@ -12,11 +12,14 @@
  *******************************************************************************/
 package org.eclipse.kapua.app.console.shared.util;
 
+import com.extjs.gxt.ui.client.data.BaseModel;
+import com.extjs.gxt.ui.client.data.PagingLoadConfig;
 import org.eclipse.kapua.app.console.client.group.GwtGroupQuery;
 import org.eclipse.kapua.app.console.shared.model.GwtEntityModel;
 import org.eclipse.kapua.app.console.shared.model.GwtPermission;
 import org.eclipse.kapua.app.console.shared.model.GwtPermission.GwtAction;
 import org.eclipse.kapua.app.console.shared.model.GwtPermission.GwtDomain;
+import org.eclipse.kapua.app.console.shared.model.account.GwtAccountQuery;
 import org.eclipse.kapua.app.console.shared.model.GwtUpdatableEntityModel;
 import org.eclipse.kapua.app.console.shared.model.authentication.GwtCredential;
 import org.eclipse.kapua.app.console.shared.model.authentication.GwtCredentialCreator;
@@ -26,12 +29,15 @@ import org.eclipse.kapua.app.console.shared.model.authorization.*;
 import org.eclipse.kapua.app.console.shared.model.user.GwtUserQuery;
 import org.eclipse.kapua.broker.core.BrokerDomain;
 import org.eclipse.kapua.commons.model.id.KapuaEid;
+import org.eclipse.kapua.commons.model.query.predicate.AndPredicate;
 import org.eclipse.kapua.commons.model.query.predicate.AttributePredicate;
 import org.eclipse.kapua.locator.KapuaLocator;
 import org.eclipse.kapua.model.KapuaEntity;
 import org.eclipse.kapua.model.KapuaUpdatableEntity;
 import org.eclipse.kapua.model.id.KapuaId;
 import org.eclipse.kapua.model.query.predicate.KapuaAttributePredicate.Operator;
+import org.eclipse.kapua.service.account.AccountFactory;
+import org.eclipse.kapua.service.account.AccountQuery;
 import org.eclipse.kapua.service.account.internal.AccountDomain;
 import org.eclipse.kapua.service.authentication.credential.*;
 import org.eclipse.kapua.service.authentication.credential.shiro.CredentialDomain;
@@ -63,9 +69,6 @@ import org.eclipse.kapua.service.user.internal.UserPredicates;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import com.extjs.gxt.ui.client.data.BaseModel;
-import com.extjs.gxt.ui.client.data.PagingLoadConfig;
 
 /**
  * Utility class for convert {@link BaseModel}s to {@link KapuaEntity}ies and other Kapua models
@@ -160,6 +163,29 @@ public class GwtKapuaModelConverter {
         // Return converted
         return userQuery;
     }
+    
+    public static AccountQuery convertAccountQuery(PagingLoadConfig loadConfig, GwtAccountQuery gwtAccountQuery){
+        KapuaLocator locator = KapuaLocator.getInstance();
+        AccountFactory factory = locator.getFactory(AccountFactory.class);
+        AccountQuery query = factory.newQuery(convert(gwtAccountQuery.getScopeId()));
+        AndPredicate predicate = new AndPredicate();
+        
+        if(gwtAccountQuery.getName() != null && !gwtAccountQuery.getName().trim().isEmpty()){
+            predicate.and(new AttributePredicate<String>("name", gwtAccountQuery.getName(), Operator.LIKE));
+        }
+        
+        if(gwtAccountQuery.getOrganizationName() != null && !gwtAccountQuery.getOrganizationName().isEmpty()){
+            predicate.and(new AttributePredicate<String>("organization.name", gwtAccountQuery.getOrganizationName(), Operator.LIKE));
+        }
+        
+        if(gwtAccountQuery.getOrganizationEmail() != null && !gwtAccountQuery.getOrganizationEmail().isEmpty()){
+            predicate.and(new AttributePredicate<String>("organization.email", gwtAccountQuery.getOrganizationEmail(), Operator.LIKE));
+        }
+        
+        query.setPredicate(predicate);
+        
+        return query;
+    }
 
     /**
      * Converts a {@link GwtCredentialQuery} into a {@link CredentialQuery} object for backend usage
@@ -177,12 +203,17 @@ public class GwtKapuaModelConverter {
 
         // Convert query
         CredentialQuery credentialQuery = credentialFactory.newQuery(convert(gwtCredentialQuery.getScopeId()));
+        AndPredicate andPredicate = new AndPredicate();
+        if (gwtCredentialQuery.getUserId() != null && !gwtCredentialQuery.getUserId().trim().isEmpty()){
+            andPredicate.and(new AttributePredicate<KapuaId>(CredentialPredicates.USER_ID, convert(gwtCredentialQuery.getUserId())));
+        }
         if (gwtCredentialQuery.getUsername() != null && !gwtCredentialQuery.getUsername().trim().isEmpty()) {
             // TODO set username predicate
         }
         if (gwtCredentialQuery.getType() != null && gwtCredentialQuery.getType() != GwtCredentialType.ALL) {
-            credentialQuery.setPredicate(new AttributePredicate<CredentialType>(CredentialPredicates.CREDENTIAL_TYPE, GwtKapuaModelConverter.convert(gwtCredentialQuery.getType()), Operator.EQUAL));
+            andPredicate.and(new AttributePredicate<CredentialType>(CredentialPredicates.CREDENTIAL_TYPE, GwtKapuaModelConverter.convert(gwtCredentialQuery.getType()), Operator.EQUAL));
         }
+        credentialQuery.setPredicate(andPredicate);
         credentialQuery.setOffset(loadConfig.getOffset());
         credentialQuery.setLimit(loadConfig.getLimit());
 
@@ -313,7 +344,9 @@ public class GwtKapuaModelConverter {
         KapuaId scopeId = convert(gwtCredential.getScopeId());
         Credential credential = credentialFactory
                 .newCredential(scopeId, convert(gwtCredential.getUserId()), convert(gwtCredential.getCredentialTypeEnum()), gwtCredential.getCredentialKey());
-
+        if(gwtCredential.getId() != null && !gwtCredential.getId().trim().isEmpty()){
+            credential.setId(convert(gwtCredential.getId()));
+        }
         //
         // Return converted
         return credential;
@@ -473,7 +506,7 @@ public class GwtKapuaModelConverter {
             case credential:
                 domain = new CredentialDomain();
                 break;
-            case data:
+            case datastore:
                 domain = new DatastoreDomain();
                 break;
             case device:
