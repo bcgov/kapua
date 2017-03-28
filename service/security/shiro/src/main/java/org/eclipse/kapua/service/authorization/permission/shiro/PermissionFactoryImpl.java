@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2016 Eurotech and/or its affiliates and others
+ * Copyright (c) 2011, 2017 Eurotech and/or its affiliates and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,7 +8,6 @@
  *
  * Contributors:
  *     Eurotech - initial API and implementation
- *
  *******************************************************************************/
 package org.eclipse.kapua.service.authorization.permission.shiro;
 
@@ -23,8 +22,6 @@ import org.eclipse.kapua.service.authorization.domain.Domain;
 import org.eclipse.kapua.service.authorization.permission.Actions;
 import org.eclipse.kapua.service.authorization.permission.Permission;
 import org.eclipse.kapua.service.authorization.permission.PermissionFactory;
-import org.eclipse.kapua.service.authorization.role.RolePermission;
-import org.eclipse.kapua.service.authorization.role.shiro.RolePermissionImpl;
 import org.eclipse.kapua.service.authorization.shiro.KapuaAuthorizationErrorCodes;
 import org.eclipse.kapua.service.authorization.shiro.KapuaAuthorizationException;
 
@@ -44,12 +41,7 @@ public class PermissionFactoryImpl implements PermissionFactory {
 
     @Override
     public Permission newPermission(Domain domain, Actions action, KapuaId targetScopeId, KapuaId groupId) {
-        return new PermissionImpl(domain.getName(), action, targetScopeId, groupId);
-    }
-
-    @Override
-    public RolePermission newRolePermission(KapuaId scopeId, Permission permission) {
-        return new RolePermissionImpl(scopeId, permission);
+        return new PermissionImpl(domain != null ? domain.getName() : null, action, targetScopeId, groupId);
     }
 
     @Override

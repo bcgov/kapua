@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2016 Eurotech and/or its affiliates and others
+ * Copyright (c) 2011, 2017 Eurotech and/or its affiliates and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,11 +8,10 @@
  *
  * Contributors:
  *     Eurotech - initial API and implementation
- *
  *******************************************************************************/
 package org.eclipse.kapua.service.authorization.domain;
 
-import org.eclipse.kapua.model.KapuaObjectFactory;
+import org.eclipse.kapua.model.KapuaEntityFactory;
 import org.eclipse.kapua.service.KapuaService;
 
 /**
@@ -21,7 +20,7 @@ import org.eclipse.kapua.service.KapuaService;
  * @since 1.0.0
  *
  */
-public interface DomainFactory extends KapuaObjectFactory {
+public interface DomainFactory extends KapuaEntityFactory<Domain, DomainCreator, DomainQuery, DomainListResult> {
 
     /**
      * Instantiate a new {@link DomainCreator} implementing object with the provided parameters.
@@ -35,11 +34,4 @@ public interface DomainFactory extends KapuaObjectFactory {
      */
     public DomainCreator newCreator(String name, String serviceName);
 
-    /**
-     * Instantiate a new {@link DomainQuery} implementing object.
-     * 
-     * @return A instance of the implementing class of {@link DomainQuery}.
-     * @since 1.0.0
-     */
-    public DomainQuery newQuery();
 }

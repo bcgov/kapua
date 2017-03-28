@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2016 Eurotech and/or its affiliates and others
+ * Copyright (c) 2011, 2017 Eurotech and/or its affiliates and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,7 +8,6 @@
  *
  * Contributors:
  *     Eurotech - initial API and implementation
- *
  *******************************************************************************/
 package org.eclipse.kapua.service.user;
 
@@ -22,33 +21,31 @@ import org.eclipse.kapua.model.KapuaNamedEntity;
 
 /**
  * User entity
- * 
+ *
  * @since 1.0
- * 
  */
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "user")
+@XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlType(propOrder = { "status",
-                       "displayName",
-                       "email",
-                       "phoneNumber",
-                       "userType",
-                       "externalId"
-                     },
-         factoryClass = UserXmlRegistry.class, 
-         factoryMethod = "newUser")
-public interface User extends KapuaNamedEntity
-{
+        "displayName",
+        "email",
+        "phoneNumber",
+        "userType",
+        "externalId"
+}, //
+        factoryClass = UserXmlRegistry.class, //
+        factoryMethod = "newUser")
+public interface User extends KapuaNamedEntity {
+
     public static final String TYPE = "user";
 
-    default public String getType()
-    {
+    default public String getType() {
         return TYPE;
     }
 
     /**
      * Return the user status
-     * 
+     *
      * @return
      */
     @XmlElement(name = "status")
@@ -56,14 +53,14 @@ public interface User extends KapuaNamedEntity
 
     /**
      * Get the user status
-     * 
+     *
      * @param status
      */
     public void setStatus(UserStatus status);
 
     /**
      * Return the display name (may be a friendly username to show in the UI)
-     * 
+     *
      * @return
      */
     @XmlElement(name = "displayName")
@@ -71,14 +68,14 @@ public interface User extends KapuaNamedEntity
 
     /**
      * Set the display name
-     * 
+     *
      * @param displayName
      */
     public void setDisplayName(String displayName);
 
     /**
      * Get the user email
-     * 
+     *
      * @return
      */
     @XmlElement(name = "email")
@@ -86,14 +83,14 @@ public interface User extends KapuaNamedEntity
 
     /**
      * Set the user email
-     * 
+     *
      * @param email
      */
     public void setEmail(String email);
 
     /**
      * Get the phone number
-     * 
+     *
      * @return
      */
     @XmlElement(name = "phoneNumber")
@@ -101,14 +98,14 @@ public interface User extends KapuaNamedEntity
 
     /**
      * Set the phone number
-     * 
+     *
      * @param phoneNumber
      */
     public void setPhoneNumber(String phoneNumber);
-    
+
     /**
      * Get the user type
-     * 
+     *
      * @return
      */
     @XmlElement(name = "userType")
@@ -116,14 +113,14 @@ public interface User extends KapuaNamedEntity
 
     /**
      * Set the user type
-     * 
+     *
      * @param phoneNumber
      */
     public void setUserType(UserType userType);
-    
+
     /**
      * Get the external ID
-     * 
+     *
      * @return
      */
     @XmlElement(name = "externalId")
@@ -131,7 +128,7 @@ public interface User extends KapuaNamedEntity
 
     /**
      * Set the external ID
-     * 
+     *
      * @param externalId
      */
     public void setExternalId(String externalId);

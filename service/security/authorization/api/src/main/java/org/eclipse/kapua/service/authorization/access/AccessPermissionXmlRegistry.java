@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2016 Eurotech and/or its affiliates and others
+ * Copyright (c) 2011, 2017 Eurotech and/or its affiliates and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,7 +8,6 @@
  *
  * Contributors:
  *     Eurotech - initial API and implementation
- *
  *******************************************************************************/
 package org.eclipse.kapua.service.authorization.access;
 
@@ -28,7 +27,7 @@ public class AccessPermissionXmlRegistry {
      * @return
      */
     public AccessPermission newAccessPermission() {
-        return factory.newAccessPermission();
+        return factory.newEntity(null);
     }
 
     /**
@@ -46,6 +45,10 @@ public class AccessPermissionXmlRegistry {
      * @return
      */
     public AccessPermissionListResult newAccessPermissionListResult() {
-        return factory.newAccessPermissionListResult();
+        return factory.newListResult();
+    }
+
+    public AccessPermissionQuery newQuery() {
+        return factory.newQuery(null);
     }
 }

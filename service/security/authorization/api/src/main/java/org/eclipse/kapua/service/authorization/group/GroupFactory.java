@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2016 Eurotech and/or its affiliates and others
+ * Copyright (c) 2011, 2017 Eurotech and/or its affiliates and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,10 +8,10 @@
  *
  * Contributors:
  *     Eurotech - initial API and implementation
- *
  *******************************************************************************/
 package org.eclipse.kapua.service.authorization.group;
 
+import org.eclipse.kapua.model.KapuaEntityFactory;
 import org.eclipse.kapua.model.KapuaObjectFactory;
 import org.eclipse.kapua.model.id.KapuaId;
 
@@ -21,7 +21,7 @@ import org.eclipse.kapua.model.id.KapuaId;
  * @since 1.0.0
  *
  */
-public interface GroupFactory extends KapuaObjectFactory {
+public interface GroupFactory extends KapuaEntityFactory<Group, GroupCreator, GroupQuery, GroupListResult> {
 
     /**
      * Instantiate a new {@link GroupCreator} implementing object with the provided parameters.
@@ -35,13 +35,4 @@ public interface GroupFactory extends KapuaObjectFactory {
      */
     public GroupCreator newCreator(KapuaId scopeId, String name);
 
-    /**
-     * Instantiate a new {@link GroupQuery} implementing object.
-     * 
-     * @param scopeId
-     *            The scope id of the {@link GroupQuery}.
-     * @return A instance of the implementing class of {@link GroupQuery}.
-     * @since 1.0.0
-     */
-    public GroupQuery newQuery(KapuaId scopeId);
 }

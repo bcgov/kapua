@@ -16,7 +16,6 @@ import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.kapua.KapuaException;
 import org.eclipse.kapua.commons.model.id.KapuaEid;
 import org.eclipse.kapua.commons.model.query.predicate.AttributePredicate;
 import org.eclipse.kapua.commons.security.KapuaSecurityUtils;
@@ -30,8 +29,6 @@ import org.eclipse.kapua.service.authorization.domain.DomainService;
 import org.eclipse.kapua.service.authorization.domain.shiro.DomainPredicates;
 import org.eclipse.kapua.service.authorization.permission.Actions;
 import org.eclipse.kapua.test.KapuaTest;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class DomainServiceTest extends KapuaTest {
@@ -126,7 +123,7 @@ public class DomainServiceTest extends KapuaTest {
             DomainFactory domainFactory = locator.getFactory(DomainFactory.class);
             DomainService domainService = locator.getService(DomainService.class);
 
-            long initialCount = domainService.count(domainFactory.newQuery());
+            long initialCount = domainService.count(domainFactory.newQuery(null));
 
             // Domain 1
             Set<Actions> domainActions = new HashSet<>();
@@ -150,7 +147,7 @@ public class DomainServiceTest extends KapuaTest {
 
             //
             // Test query
-            DomainQuery query = domainFactory.newQuery();
+            DomainQuery query = domainFactory.newQuery(null);
             DomainListResult result = domainService.query(query);
             long count = domainService.count(query);
 
@@ -160,7 +157,7 @@ public class DomainServiceTest extends KapuaTest {
 
             //
             // Test name filtered query
-            query = domainFactory.newQuery();
+            query = domainFactory.newQuery(null);
 
             query.setPredicate(new AttributePredicate<String>(DomainPredicates.NAME, domain1.getName()));
             result = domainService.query(query);
@@ -173,7 +170,7 @@ public class DomainServiceTest extends KapuaTest {
 
             //
             // Test name filtered query
-            query = domainFactory.newQuery();
+            query = domainFactory.newQuery(null);
 
             query.setPredicate(new AttributePredicate<String>(DomainPredicates.SERVICE_NAME, domain2.getServiceName()));
             result = domainService.query(query);
