@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2016 Eurotech and/or its affiliates
+ * Copyright (c) 2011, 2017 Eurotech and/or its affiliates
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,7 +8,6 @@
  *
  * Contributors:
  *     Eurotech - initial API and implementation
- *
  *******************************************************************************/
 package org.eclipse.kapua.service.device.registry;
 
@@ -27,15 +26,14 @@ public class DeviceXmlRegistry {
 
     private final KapuaLocator locator = KapuaLocator.getInstance();
     private final DeviceFactory factory = locator.getFactory(DeviceFactory.class);
-    
+
     /**
      * Creates a new {@link Device}
      * 
      * @return
      */
-    public Device newDevice()
-    {
-        return factory.newDevice();
+    public Device newDevice() {
+        return factory.newEntity(null);
     }
 
     /**
@@ -43,8 +41,7 @@ public class DeviceXmlRegistry {
      * 
      * @return
      */
-    public DeviceCreator newDeviceCreator()
-    {
+    public DeviceCreator newDeviceCreator() {
         return factory.newCreator(null, null);
     }
 
@@ -53,8 +50,11 @@ public class DeviceXmlRegistry {
      * 
      * @return
      */
-    public DeviceListResult newDeviceListResult()
-    {
-        return factory.newDeviceListResult();
+    public DeviceListResult newDeviceListResult() {
+        return factory.newListResult();
+    }
+
+    public DeviceQuery newQuery() {
+        return factory.newQuery(null);
     }
 }

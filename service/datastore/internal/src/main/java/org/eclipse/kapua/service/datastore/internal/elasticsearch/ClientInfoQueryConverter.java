@@ -5,7 +5,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- *  
+ *
  * Contributors:
  *     Eurotech - initial API and implementation
  *******************************************************************************/
@@ -18,31 +18,27 @@ import org.eclipse.kapua.service.datastore.model.query.StorableFetchStyle;
 /**
  * Client info query converter.<br>
  * This object adds the specific client info included and excluded fields definition to the abstract query converter.
- * 
- * @since 1.0
  *
+ * @since 1.0.0
  */
-public class ClientInfoQueryConverter extends AbstractStorableQueryConverter<ClientInfo, ClientInfoQuery>
-{
+public class ClientInfoQueryConverter extends AbstractStorableQueryConverter<ClientInfo, ClientInfoQuery> {
 
     @Override
-    protected String[] getIncludes(StorableFetchStyle fetchStyle)
-    {
+    protected String[] getIncludes(StorableFetchStyle fetchStyle) {
         return new String[] { "" };
     }
 
     @Override
-    protected String[] getExcludes(StorableFetchStyle fetchStyle)
-    {
+    protected String[] getExcludes(StorableFetchStyle fetchStyle) {
         return new String[] { "*" };
     }
 
     @Override
-    protected String[] getFields()
-    {
-        return new String[] { ClientInfoField.CLIENT_ID.field(),
-                              ClientInfoField.TIMESTAMP.field(),
-                              ClientInfoField.ACCOUNT.field(),
-                              ClientInfoField.MESSAGE_ID.field() };
+    protected String[] getFields() {
+        return new String[] { //
+                ClientInfoField.CLIENT_ID.field(),
+                ClientInfoField.TIMESTAMP.field(),
+                ClientInfoField.SCOPE_ID.field(),
+                ClientInfoField.MESSAGE_ID.field() };
     }
 }

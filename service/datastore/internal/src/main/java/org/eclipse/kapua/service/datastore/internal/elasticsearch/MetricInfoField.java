@@ -5,7 +5,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- *  
+ *
  * Contributors:
  *     Eurotech - initial API and implementation
  *******************************************************************************/
@@ -16,16 +16,14 @@ import org.eclipse.kapua.service.datastore.model.query.StorableField;
 
 /**
  * This enumeration defines the fields names used in the {@link MetricInfo} Elasticsearch schema
- * 
- * @since 1.0
  *
+ * @since 1.0.0
  */
-public enum MetricInfoField implements StorableField
-{
+public enum MetricInfoField implements StorableField {
     /**
-     * Account name
+     * Scope id
      */
-    ACCOUNT(EsSchema.METRIC_ACCOUNT),
+    SCOPE_ID(EsSchema.METRIC_SCOPE_ID),
     /**
      * Client identifier
      */
@@ -43,10 +41,6 @@ public enum MetricInfoField implements StorableField
      */
     TYPE_FULL(EsSchema.METRIC_MTR_TYPE_FULL),
     /**
-     * Metric value
-     */
-    VALUE_FULL(EsSchema.METRIC_MTR_VALUE_FULL),
-    /**
      * Metric timestamp (derived from the message that published the metric)
      */
     TIMESTAMP_FULL(EsSchema.METRIC_MTR_TIMESTAMP_FULL),
@@ -57,14 +51,12 @@ public enum MetricInfoField implements StorableField
 
     private String field;
 
-    private MetricInfoField(String name)
-    {
+    private MetricInfoField(String name) {
         this.field = name;
     }
 
     @Override
-    public String field()
-    {
+    public String field() {
         return field;
     }
 }

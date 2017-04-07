@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2016 Eurotech and/or its affiliates and others
+ * Copyright (c) 2011, 2017 Eurotech and/or its affiliates and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,7 +8,6 @@
  *
  * Contributors:
  *     Eurotech - initial API and implementation
- *
  *******************************************************************************/
 package org.eclipse.kapua.service.authorization.role;
 
@@ -28,7 +27,7 @@ public class RoleXmlRegistry {
      * @return
      */
     public Role newRole() {
-        return factory.newRole(null);
+        return factory.newEntity(null);
     }
 
     /**
@@ -46,6 +45,10 @@ public class RoleXmlRegistry {
      * @return
      */
     public RoleListResult newRoleListResult() {
-        return factory.newRoleListResult();
+        return factory.newListResult();
+    }
+
+    public RoleQuery newQuery() {
+        return factory.newQuery(null);
     }
 }

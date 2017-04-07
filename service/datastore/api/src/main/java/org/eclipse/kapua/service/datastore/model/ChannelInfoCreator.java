@@ -13,46 +13,57 @@ package org.eclipse.kapua.service.datastore.model;
 
 import java.util.Date;
 
+import org.eclipse.kapua.model.id.KapuaId;
+
 /**
  * Channel information schema creator definition
  * 
- * @since 1.0
- *
+ * @since 1.0.0
  */
-public interface ChannelInfoCreator extends StorableCreator<ChannelInfo>
-{
+public interface ChannelInfoCreator extends StorableCreator<ChannelInfo> {
+
     /**
      * Get the account
      * 
      * @return
+     * 
+     * @since 1.0.0
      */
-    public String getAccount();
+    public KapuaId getScopeId();
 
     /**
      * Get the client identifier
      * 
      * @return
+     * 
+     * @since 1.0.0
      */
     public String getClientId();
 
     /**
-     * Get the channel
+     * Get the name
      * 
      * @return
+     * 
+     * @since 1.0.0
      */
-    public String getChannel();
+    public String getName();
 
     /**
-     * Set the channel
+     * Set the channel name
      * 
-     * @param channel
+     * @param name
+     * 
+     * @since 1.0.0
      */
-    public void setChannel(String channel);
+    public void setName(String name);
 
     /**
      * Get the message identifier (of the first message published on this channel)
      * 
      * @return
+     * 
+     * @since 1.0.0
      */
     public StorableId getMessageId();
 
@@ -60,6 +71,8 @@ public interface ChannelInfoCreator extends StorableCreator<ChannelInfo>
      * Set the message identifier (of the first message published on this channel)
      * 
      * @param messageId
+     * 
+     * @since 1.0.0
      */
     public void setMessageId(StorableId messageId);
 
@@ -67,6 +80,8 @@ public interface ChannelInfoCreator extends StorableCreator<ChannelInfo>
      * Get the message timestamp (of the first message published on this channel)
      * 
      * @return
+     * 
+     * @since 1.0.0
      */
     public Date getMessageTimestamp();
 
@@ -74,6 +89,8 @@ public interface ChannelInfoCreator extends StorableCreator<ChannelInfo>
      * Set the message timestamp (of the first message published on this channel)
      * 
      * @param messageTimestamp
+     * 
+     * @since 1.0.0
      */
     public void setMessageTimestamp(Date messageTimestamp);
 }

@@ -14,7 +14,7 @@ package org.eclipse.kapua.service.authentication.token;
 
 import java.util.Date;
 
-import org.eclipse.kapua.model.KapuaObjectFactory;
+import org.eclipse.kapua.model.KapuaEntityFactory;
 import org.eclipse.kapua.model.id.KapuaId;
 
 /**
@@ -23,8 +23,8 @@ import org.eclipse.kapua.model.id.KapuaId;
  * @since 1.0
  * 
  */
-public interface AccessTokenFactory extends KapuaObjectFactory {
-
+public interface AccessTokenFactory extends KapuaEntityFactory<AccessToken, AccessTokenCreator, AccessTokenQuery, AccessTokenListResult> {
+    
     /**
      * Create a new {@link AccessTokenCreator} for the specific access credential type
      * 
@@ -36,11 +36,13 @@ public interface AccessTokenFactory extends KapuaObjectFactory {
      *            The tokenId of the new {@link AccessToken}.
      * @param expiresOn
      *            The expiration date after which the token is no longer valid.
-     * 
-     * @return A new instance of {@link AccessToken}.
+     * @param refreshToken 
+     *            The refresh token to obtain a new {@link AccessToken} after expiration.
+     *            
+     * @return A new instance of {@link AccessTokenCreator}.
      * 
      * @since 1.0
      */
-    public AccessTokenCreator newCreator(KapuaId scopeId, KapuaId userId, String tokenId, Date expiresOn);
+    public AccessTokenCreator newCreator(KapuaId scopeId, KapuaId userId, String tokenId, Date expiresOn, String refreshToken, Date refreshExpiresOn);
 
 }

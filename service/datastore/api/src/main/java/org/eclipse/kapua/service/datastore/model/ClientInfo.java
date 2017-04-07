@@ -13,39 +13,73 @@ package org.eclipse.kapua.service.datastore.model;
 
 import java.util.Date;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.eclipse.kapua.model.id.KapuaId;
+import org.eclipse.kapua.model.id.KapuaIdAdapter;
+import org.eclipse.kapua.model.xml.DateXmlAdapter;
+
 /**
  * Client information schema definition
  * 
- * @since 1.0
- *
+ * @since 1.0.0
  */
-public interface ClientInfo extends Storable
-{
+@XmlRootElement(name = "clientInfo")
+@XmlAccessorType(XmlAccessType.PROPERTY)
+@XmlType(propOrder = { //
+        "id", //
+        "scopeId", //
+        "clientId", //
+        "firstMessageId", //
+        "firstMessageOn", //
+        "lastMessageId", //
+        "lastMessageOn" //
+})
+public interface ClientInfo extends Storable {
+
     /**
      * Get the record identifier
      * 
      * @return
+     * 
+     * @since 1.0.0
      */
+    @XmlElement(name = "id")
+    @XmlJavaTypeAdapter(StorableIdAdapter.class)
     public StorableId getId();
 
     /**
-     * Get the account
+     * Get the scope id
      * 
      * @return
+     * 
+     * @since 1.0.0
      */
-    public String getAccount();
+    @XmlElement(name = "scopeId")
+    @XmlJavaTypeAdapter(KapuaIdAdapter.class)
+    public KapuaId getScopeId();
 
     /**
      * Get the client identifier
      * 
      * @return
+     * 
+     * @since 1.0.0
      */
+    @XmlElement(name = "clientId")
     public String getClientId();
 
     /**
      * Set the client identifier
      * 
      * @param clientId
+     * 
+     * @since 1.0.0
      */
     public void setClientId(String clientId);
 
@@ -53,59 +87,83 @@ public interface ClientInfo extends Storable
      * Get the message identifier (of the first message published by this client)
      * 
      * @return
+     * 
+     * @since 1.0.0
      */
-    public StorableId getFirstPublishedMessageId();
+    @XmlElement(name = "firstMessageId")
+    @XmlJavaTypeAdapter(StorableIdAdapter.class)
+    public StorableId getFirstMessageId();
 
     /**
      * Set the message identifier (of the first message published by this client)
      * 
-     * @param firstPublishedMessageId
+     * @param firstMessageId
+     * 
+     * @since 1.0.0
      */
-    public void setFirstPublishedMessageId(StorableId firstPublishedMessageId);
+    public void setFirstMessageId(StorableId firstMessageId);
 
     /**
      * Get the message timestamp (of the first message published by this client)
      * 
      * @return
+     * 
+     * @since 1.0.0
      */
-    public Date getFirstPublishedMessageTimestamp();
+    @XmlElement(name = "firstMessageOn")
+    @XmlJavaTypeAdapter(DateXmlAdapter.class)
+    public Date getFirstMessageOn();
 
     /**
      * Set the message timestamp (of the first message published by this client)
      * 
-     * @param firstPublishedMessageTimestamp
-     */
-    public void setFirstPublishedMessageTimestamp(Date firstPublishedMessageTimestamp);
-
-    /**
-     * Get the identifier of the last published message for this client.<br>
-     * <b>Transient data field (the last publish timestamp should get from the message table by the find service)</b>
+     * @param firstMessageOn
      * 
-     * @return
+     * @since 1.0.0
      */
-    public Date getLastPublishedMessageTimestamp();
-
-    /**
-     * Set the timestamp of the last published message for this client.<br>
-     * <b>Transient data field (the last publish timestamp should get from the message table by the find service)</b>
-     * 
-     * @param lastPublishedMessageTimestamp
-     */
-    public void setLastPublishedMessageTimestamp(Date lastPublishedMessageTimestamp);
+    public void setFirstMessageOn(Date firstMessageOn);
 
     /**
      * Get the message identifier of the last published message for this client.<br>
      * <b>Transient data field (the last publish message identifier should get from the message table by the find service)</b>
      * 
      * @return
+     * 
+     * @since 1.0.0
      */
-    public StorableId getLastPublishedMessageId();
+    @XmlElement(name = "lastMessageId")
+    @XmlJavaTypeAdapter(StorableIdAdapter.class)
+    public StorableId getLastMessageId();
 
     /**
      * Set the message identifier of the last published message for this client.<br>
      * <b>Transient data field (the last publish message identifier should get from the message table by the find service)</b>
      * 
-     * @param lastPublishedMessageId
+     * @param lastMessageId
+     * 
+     * @since 1.0.0
      */
-    public void setLastPublishedMessageId(StorableId lastPublishedMessageId);
+    public void setLastMessageId(StorableId lastMessageId);
+
+    /**
+     * Get the identifier of the last published message for this client.<br>
+     * <b>Transient data field (the last publish timestamp should get from the message table by the find service)</b>
+     * 
+     * @return
+     * 
+     * @since 1.0.0
+     */
+    @XmlElement(name = "lastMessageOn")
+    @XmlJavaTypeAdapter(DateXmlAdapter.class)
+    public Date getLastMessageOn();
+
+    /**
+     * Set the timestamp of the last published message for this client.<br>
+     * <b>Transient data field (the last publish timestamp should get from the message table by the find service)</b>
+     * 
+     * @param lastMessageOn
+     * 
+     * @since 1.0.0
+     */
+    public void setLastMessageOn(Date lastMessageOn);
 }

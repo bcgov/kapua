@@ -27,6 +27,11 @@
         </fileSet>
 
         <fileSet>
+            <outputDirectory>/shiro-authorization</outputDirectory>
+            <directory>../service/security/shiro/target/cucumber</directory>
+        </fileSet>
+
+        <fileSet>
             <outputDirectory>/account-service</outputDirectory>
             <directory>../service/account/internal/target/cucumber</directory>
         </fileSet>
@@ -44,6 +49,11 @@
         <fileSet>
             <outputDirectory>/user-service-i9n</outputDirectory>
             <directory>../qa/target/cucumber/UserServiceI9n</directory>
+        </fileSet>
+
+        <fileSet>
+            <outputDirectory>/device-broker-i9n</outputDirectory>
+            <directory>../qa/target/cucumber/DeviceBrokerI9n</directory>
         </fileSet>
     </fileSets>
 

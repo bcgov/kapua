@@ -13,149 +13,216 @@ package org.eclipse.kapua.service.datastore.model;
 
 import java.util.Date;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.eclipse.kapua.model.id.KapuaId;
+import org.eclipse.kapua.model.id.KapuaIdAdapter;
+import org.eclipse.kapua.model.xml.DateXmlAdapter;
+
 /**
  * Information about device metric value. Metric is an arbitrary named value. We usually
  * keep only the most recent value of the metric.
  * 
- * @since 1.0
+ * @since 1.0.0
  */
-public interface MetricInfo extends Storable
-{
+@XmlRootElement(name = "metricInfo")
+@XmlAccessorType(XmlAccessType.PROPERTY)
+@XmlType(propOrder = { //
+        "id", //
+        "scopeId", //
+        "clientId", //
+        "channel", //
+        "name", //
+        "metricType", //
+        "firstMessageId", //
+        "firstMessageOn", //
+        "lastMessageId", //
+        "lastMessageOn" })
+public interface MetricInfo extends Storable {
+
     /**
      * Get the record identifier
      * 
      * @return
+     * 
+     * @since 1.0.0
      */
+    @XmlElement(name = "id")
+    @XmlJavaTypeAdapter(StorableIdAdapter.class)
     public StorableId getId();
 
     /**
-     * Get the account
+     * Get the scope id
      * 
      * @return
+     * 
+     * @since 1.0.0
      */
-    public String getAccount();
+    @XmlElement(name = "scopeId")
+    @XmlJavaTypeAdapter(KapuaIdAdapter.class)
+    public KapuaId getScopeId();
 
     /**
      * Get the client identifier
      * 
      * @return
+     * 
+     * @since 1.0.0
      */
+    @XmlElement(name = "clientId")
     public String getClientId();
+
+    /**
+     * Sets the client identifier
+     * 
+     * @param clientId
+     *            The client identifier
+     * 
+     * @since 1.0.0
+     */
+    public void setClientId(String clientId);
 
     /**
      * Get the channel
      * 
      * @return
+     * 
+     * @since 1.0.0
      */
+    @XmlElement(name = "channel")
     public String getChannel();
 
     /**
      * Set the channel
      * 
      * @param channel
+     * 
+     * @since 1.0.0
      */
     public void setChannel(String channel);
 
     /**
-     * Get the metric name
+     * Gets the metric name
      * 
-     * @return
+     * @return The metric name
+     * @since 1.0.0
      */
+    @XmlElement(name = "name")
     public String getName();
 
     /**
-     * Set the metric name
+     * Sets the metric name
      * 
      * @param name
+     *            The metric name
+     * @since 1.0.0
      */
     public void setName(String name);
 
     /**
      * Get the metric type
      * 
-     * @return
+     * @return The metric type
+     * @since 1.0.0
      */
-    public String getType();
+    @XmlElement(name = "metricType")
+    @XmlJavaTypeAdapter(MetricInfoTypeAdapter.class)
+    public Class<?> getMetricType();
 
     /**
-     * Set the metric type
+     * Sets the metric type
      * 
-     * @param type
+     * @param metricType
+     *            The metric type
      */
-    public void setType(String type);
-
-    /**
-     * Get the metric value
-     * 
-     * @param clazz metric value type
-     * @return
-     */
-    public <T> T getValue(Class<T> clazz);
-
-    /**
-     * Set the metric value
-     * 
-     * @param value
-     */
-    public <T> void setValue(T value);
+    public void setMetricType(Class<?> metricType);
 
     /**
      * Get the message identifier (of the first message published that containing this metric)
      * 
      * @return
+     * 
+     * @since 1.0.0
      */
-    public StorableId getFirstPublishedMessageId();
+    @XmlElement(name = "firstMessageId")
+    @XmlJavaTypeAdapter(StorableIdAdapter.class)
+    public StorableId getFirstMessageId();
 
     /**
      * Set the message identifier (of the first message published that containing this metric)
      * 
-     * @param firstPublishedMessageId
+     * @param firstMessageId
+     * 
+     * @since 1.0.0
      */
-    public void setFirstPublishedMessageId(StorableId firstPublishedMessageId);
+    public void setFirstMessageId(StorableId firstMessageId);
 
     /**
      * Get the message timestamp (of the first message published that containing this metric)
      * 
      * @return
+     * 
+     * @since 1.0.0
      */
-    public Date getFirstPublishedMessageTimestamp();
+    @XmlElement(name = "firstMessageOn")
+    @XmlJavaTypeAdapter(DateXmlAdapter.class)
+    public Date getFirstMessageOn();
 
     /**
      * Set the message timestamp (of the first message published that containing this metric)
      * 
-     * @param firstPublishedMessageTimestamp
+     * @param firstMessageOn
+     * 
+     * @since 1.0.0
      */
-    public void setFirstPublishedMessageTimestamp(Date firstPublishedMessageTimestamp);
+    public void setFirstMessageOn(Date firstMessageOn);
 
     /**
      * Get the message identifier of the last published message for this metric.<br>
      * <b>Transient data field (the last publish message identifier should get from the message table by the find service)</b>
      * 
      * @return
+     * 
+     * @since 1.0.0
      */
-    public StorableId getLastPublishedMessageId();
+    @XmlElement(name = "lastMessageId")
+    @XmlJavaTypeAdapter(StorableIdAdapter.class)
+    public StorableId getLastMessageId();
 
     /**
      * Set the message identifier of the last published message for this metric.<br>
      * <b>Transient data field (the last publish message identifier should get from the message table by the find service)</b>
      * 
-     * @param lastPublishedMessageId
+     * @param lastMessageId
+     * 
+     * @since 1.0.0
      */
-    public void setLastPublishedMessageId(StorableId lastPublishedMessageId);
+    public void setLastMessageId(StorableId lastMessageId);
 
     /**
      * Get the timestamp of the last published message for this metric.<br>
      * <b>Transient data field (the last publish timestamp should get from the message table by the find service)</b>
      * 
      * @return
+     * 
+     * @since 1.0.0
      */
-    public Date getLastPublishedMessageTimestamp();
+    @XmlElement(name = "lastMessageOn")
+    @XmlJavaTypeAdapter(DateXmlAdapter.class)
+    public Date getLastMessageOn();
 
     /**
      * Set the timestamp of the last published message for this metric.<br>
      * <b>Transient data field (the last publish timestamp should get from the message table by the find service)</b>
      * 
-     * @param lastPublishedMessageTimestamp
+     * @param lastMessageOn
+     * 
+     * @since 1.0.0
      */
-    public void setLastPublishedMessageTimestamp(Date lastPublishedMessageTimestamp);
+    public void setLastMessageOn(Date lastMessageOn);
 }

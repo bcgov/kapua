@@ -5,7 +5,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- *  
+ *
  * Contributors:
  *     Eurotech - initial API and implementation
  *******************************************************************************/
@@ -15,20 +15,14 @@ import org.eclipse.kapua.service.datastore.model.query.StorableField;
 
 /**
  * This enumeration defines the fields names used in the {@link MessageField} Elasticsearch schema
- * 
- * @since 1.0
  *
+ * @since 1.0.0
  */
-public enum MessageField implements StorableField
-{
+public enum MessageField implements StorableField {
     /**
      * Account identifier
      */
-    ACCOUNT_ID(EsSchema.MESSAGE_ACCOUNT_ID),
-    /**
-     * Account name
-     */
-    ACCOUNT(EsSchema.MESSAGE_ACCOUNT),
+    SCOPE_ID(EsSchema.MESSAGE_SCOPE_ID),
     /**
      * Device identifier (physical device)
      */
@@ -108,14 +102,12 @@ public enum MessageField implements StorableField
 
     private String field;
 
-    private MessageField(String name)
-    {
+    private MessageField(String name) {
         this.field = name;
     }
 
     @Override
-    public String field()
-    {
+    public String field() {
         return field;
     }
 }

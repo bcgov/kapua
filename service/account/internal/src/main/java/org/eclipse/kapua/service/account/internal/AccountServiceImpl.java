@@ -9,11 +9,12 @@
  * Contributors:
  *     Eurotech - initial API and implementation
  *     Red Hat Inc
- *
  *******************************************************************************/
 package org.eclipse.kapua.service.account.internal;
 
+import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.persistence.TypedQuery;
@@ -23,22 +24,27 @@ import org.eclipse.kapua.KapuaException;
 import org.eclipse.kapua.KapuaIllegalAccessException;
 import org.eclipse.kapua.KapuaIllegalArgumentException;
 import org.eclipse.kapua.commons.configuration.AbstractKapuaConfigurableService;
-import org.eclipse.kapua.commons.model.query.KapuaListResultImpl;
+import org.eclipse.kapua.commons.model.id.KapuaEid;
 import org.eclipse.kapua.commons.setting.system.SystemSetting;
 import org.eclipse.kapua.commons.setting.system.SystemSettingKey;
 import org.eclipse.kapua.commons.util.ArgumentValidator;
 import org.eclipse.kapua.locator.KapuaLocator;
 import org.eclipse.kapua.locator.KapuaProvider;
+import org.eclipse.kapua.model.config.metatype.KapuaTocd;
 import org.eclipse.kapua.model.id.KapuaId;
 import org.eclipse.kapua.model.query.KapuaQuery;
 import org.eclipse.kapua.service.account.Account;
 import org.eclipse.kapua.service.account.AccountCreator;
+import org.eclipse.kapua.service.account.AccountFactory;
 import org.eclipse.kapua.service.account.AccountListResult;
+import org.eclipse.kapua.service.account.AccountQuery;
 import org.eclipse.kapua.service.account.AccountService;
 import org.eclipse.kapua.service.authorization.AuthorizationService;
 import org.eclipse.kapua.service.authorization.domain.Domain;
 import org.eclipse.kapua.service.authorization.permission.Actions;
 import org.eclipse.kapua.service.authorization.permission.PermissionFactory;
+
+import com.google.common.collect.Lists;
 
 /**
  * Account service implementation.
@@ -48,9 +54,8 @@ import org.eclipse.kapua.service.authorization.permission.PermissionFactory;
 @KapuaProvider
 public class AccountServiceImpl extends AbstractKapuaConfigurableService implements AccountService {
 
-    private static final long serialVersionUID = -312489270279852500L;
-
     private static final Domain accountDomain = new AccountDomain();
+    private KapuaLocator locator = KapuaLocator.getInstance();
 
     /**
      * Constructor
@@ -66,17 +71,15 @@ public class AccountServiceImpl extends AbstractKapuaConfigurableService impleme
         // Validation of the fields
         ArgumentValidator.notNull(accountCreator, "accountCreator");
         ArgumentValidator.notEmptyOrNull(accountCreator.getName(), "name");
-        ArgumentValidator.notEmptyOrNull(accountCreator.getAccountPassword(), "accountPassword");
         ArgumentValidator.notEmptyOrNull(accountCreator.getOrganizationName(), "organizationName");
         ArgumentValidator.notEmptyOrNull(accountCreator.getOrganizationEmail(), "organizationEmail");
         ArgumentValidator.notNull(accountCreator.getScopeId(), "scopeId");
         ArgumentValidator.notNull(accountCreator.getScopeId().getId(), "scopeId.id");
-        ArgumentValidator.match(accountCreator.getAccountPassword(), ArgumentValidator.PASSWORD_REGEXP, "accountPassword");
         ArgumentValidator.match(accountCreator.getOrganizationEmail(), ArgumentValidator.EMAIL_REGEXP, "organizationEmail");
 
         //
         // Check Access
-        KapuaLocator locator = KapuaLocator.getInstance();
+
         AuthorizationService authorizationService = locator.getService(AuthorizationService.class);
         PermissionFactory permissionFactory = locator.getFactory(PermissionFactory.class);
         authorizationService.checkPermission(permissionFactory.newPermission(accountDomain, Actions.write, accountCreator.getScopeId()));
@@ -84,6 +87,11 @@ public class AccountServiceImpl extends AbstractKapuaConfigurableService impleme
         // Check if the parent account exists
         if (findById(accountCreator.getScopeId()) == null) {
             throw new KapuaIllegalArgumentException("scopeId", "parent account does not exist");
+        }
+
+        // Check child account policy
+        if (allowedChildAccounts(accountCreator.getScopeId()) <= 0) {
+            throw new KapuaIllegalArgumentException("scopeId", "max child account reached");
         }
 
         return entityManagerSession.onInsert(em -> {
@@ -168,7 +176,7 @@ public class AccountServiceImpl extends AbstractKapuaConfigurableService impleme
 
         //
         // Check if it has children
-        if (this.findChildAccountsTrusted(accountId).size() > 0) {
+        if (!findChildAccountsTrusted(accountId).isEmpty()) {
             throw new KapuaAccountException(KapuaAccountErrorCodes.OPERATION_NOT_ALLOWED, null, "This account cannot be deleted. Delete its child first.");
         }
 
@@ -292,7 +300,7 @@ public class AccountServiceImpl extends AbstractKapuaConfigurableService impleme
     }
 
     @Override
-    public KapuaListResultImpl<Account> query(KapuaQuery<Account> query)
+    public AccountListResult query(KapuaQuery<Account> query)
             throws KapuaException {
         ArgumentValidator.notNull(query, "query");
         ArgumentValidator.notNull(query.getScopeId(), "query.scopeId");
@@ -340,7 +348,7 @@ public class AccountServiceImpl extends AbstractKapuaConfigurableService impleme
         return entityManagerSession.onResult(em -> AccountDAO.find(em, accountId));
     }
 
-    private List<Account> findChildAccountsTrusted(KapuaId accountId)
+    private AccountListResult findChildAccountsTrusted(KapuaId accountId)
             throws KapuaException {
         //
         // Argument Validation
@@ -348,9 +356,68 @@ public class AccountServiceImpl extends AbstractKapuaConfigurableService impleme
         ArgumentValidator.notNull(accountId.getId(), "accountId.id");
 
         return entityManagerSession.onResult(em -> {
-            TypedQuery<Account> q = em.createNamedQuery("Account.findChildAccounts", Account.class);
-            q.setParameter("scopeId", accountId);
-            return q.getResultList();
+            AccountQuery query = new AccountQueryImpl(accountId);
+            return AccountDAO.query(em, query);
         });
+    }
+
+    @Override
+    protected String validateNewConfigValuesCoherence(KapuaTocd ocd, Map<String, Object> updatedProps, KapuaId scopeId) throws KapuaException {
+        String result = "";
+        Account selfAccount = find(scopeId);
+        int availableChildAccounts = allowedChildAccounts(scopeId, updatedProps);
+        if (availableChildAccounts < 0) {
+            result = "you can't set limited child accounts if current limit is lower than actual child accounts count";
+        }
+        int availableParentAccounts = allowedChildAccounts(getParentAccountId(selfAccount.getParentAccountPath()));
+        if (availableParentAccounts - availableChildAccounts < 0) {
+            result = "parent account child accounts limit is lower than the sum of his child accounts and his children's assigned child accounts";
+        }
+        return result;
+    }
+
+    private int allowedChildAccounts(KapuaId scopeId) throws KapuaException {
+        return allowedChildAccounts(scopeId, null);
+    }
+
+    /**
+     * 
+     * @param scopeId
+     *            The {@link ScopeId} of the account to be tested
+     * @param configuration
+     *            The configuration to be tested. If null will be read
+     *            from the current service configuration; otherwise the passed configuration
+     *            will be used in the test
+     * @return the number of child accounts spots still available
+     * @throws KapuaException
+     */
+    private int allowedChildAccounts(KapuaId scopeId, Map<String, Object> configuration) throws KapuaException {
+        AccountFactory accountFactory = locator.getFactory(AccountFactory.class);
+        if (configuration == null) {
+            configuration = getConfigValues(scopeId);
+        }
+        boolean allowInfiniteChildAccounts = (boolean) configuration.get("infiniteChildAccounts");
+        if (!allowInfiniteChildAccounts) {
+            int maxChildAccounts = (int) configuration.get("maxNumberChildAccounts");
+            AccountListResult currentChildAccounts = query(accountFactory.newQuery(scopeId));
+            long childCount = currentChildAccounts.getSize();
+            for (Account childAccount : currentChildAccounts.getItems()) {
+                Map<String, Object> childConfigValues = getConfigValues(childAccount.getId());
+                int maxChildChildAccounts = (int) childConfigValues.get("maxNumberChildAccounts");
+                childCount += maxChildChildAccounts;
+            }
+            return (int) (maxChildAccounts - childCount);
+        }
+        return Integer.MAX_VALUE;
+    }
+    
+    private KapuaId getParentAccountId(String parentAccountPath) {
+        List<String> pathFragments = Lists.newArrayList(parentAccountPath.split("/"));
+        if (pathFragments.size() == 1) {
+            // Root account
+            return null;
+        } else {
+            return new KapuaEid(new BigInteger(pathFragments.get(pathFragments.size() - 2).replace("\\", "")));
+        }
     }
 }

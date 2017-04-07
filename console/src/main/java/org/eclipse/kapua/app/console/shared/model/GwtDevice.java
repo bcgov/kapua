@@ -8,7 +8,7 @@
  *
  * Contributors:
  *     Eurotech - initial API and implementation
- *
+ *     Red Hat Inc
  *******************************************************************************/
 package org.eclipse.kapua.app.console.shared.model;
 
@@ -111,6 +111,18 @@ public class GwtDevice extends GwtUpdatableEntityModel implements Serializable {
 
     public void setClientId(String clientId) {
         set("clientId", clientId);
+    }
+    
+    public String getGroupId() {
+        return (String) get("groupId");
+    }
+
+    public String getUnescapedGroupId() {
+        return (String) getUnescaped("groupId");
+    }
+    
+    public void setGroupId(String groupId) {
+        set("groupId", groupId);
     }
 
     public Long getUptime() {
@@ -270,11 +282,11 @@ public class GwtDevice extends GwtUpdatableEntityModel implements Serializable {
     }
 
     public String getIotFrameworkVersion() {
-        return (String) get("esfKuraVersion");
+        return (String) get("iotFrameworkVersion");
     }
 
-    public void setIotFrameworkVersion(String esfKuraVersion) {
-        set("esfKuraVersion", esfKuraVersion);
+    public void setIotFrameworkVersion(String iotFrameworkVersion) {
+        set("iotFrameworkVersion", iotFrameworkVersion);
     }
 
     public String getOsgiFramework() {
@@ -507,13 +519,13 @@ public class GwtDevice extends GwtUpdatableEntityModel implements Serializable {
         set("credentialsTight", credentialsTight);
     }
 
-    public boolean getCredentialsAllowChange() {
-        return get("credentialsAllowChange");
-    }
-
-    public void setCredentialsAllowChange(boolean credentialsAllowChange) {
-        set("credentialsAllowChange", credentialsAllowChange);
-    }
+//    public boolean getCredentialsAllowChange() {
+//        return get("credentialsAllowChange");
+//    }
+//
+//    public void setCredentialsAllowChange(boolean credentialsAllowChange) {
+//        set("credentialsAllowChange", credentialsAllowChange);
+//    }
 
     public boolean isOnline() {
         return "CONNECTED".equals(getGwtDeviceConnectionStatus());
