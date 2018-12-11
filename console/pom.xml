@@ -148,7 +148,7 @@
             <!-- https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
-            <version>1.2.2</version>
+            <version>1.3.3</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -198,7 +198,7 @@
         <dependency>
             <groupId>org.gwtopenmaps.openlayers</groupId>
             <artifactId>gwt-openlayers-client</artifactId>
-            <version>0.9</version>
+            <version>1.0</version>
         </dependency>
 
         <dependency>
@@ -317,10 +317,8 @@
                         <configuration>
                             <target>
                                 <echo>Openlayers: copy resources to webapp output folder</echo>
-                                <copy
-                                        todir="${project.build.directory}/${project.build.finalName}">
-                                    <fileset
-                                            dir="${project.build.directory}/tmp/openlayers-${openlayers.version}/META-INF/resources/webjars/">
+                                <copy todir="${project.build.directory}/${project.build.finalName}">
+                                    <fileset dir="${project.build.directory}/tmp/openlayers-${openlayers.version}/META-INF/resources/webjars/">
                                         <exclude name="**/OpenLayers.*.js"/>
                                     </fileset>
                                 </copy>
@@ -336,10 +334,7 @@
                         <configuration>
                             <target>
                                 <echo>Openlayers: customize openlayers 'ImgPath' variable</echo>
-                                <replaceregexp byline="true"
-                                               file="${project.build.directory}/${project.build.finalName}/openlayers/${openlayers.version}/OpenLayers.js"
-                                               match="ImgPath:&quot;&quot;"
-                                               replace="ImgPath:&quot;openlayers/${openlayers.version}/img/&quot;"/>
+                                <replaceregexp byline="true" file="${project.build.directory}/${project.build.finalName}/openlayers/${openlayers.version}/OpenLayers.js" match="ImgPath:&quot;&quot;" replace="ImgPath:&quot;openlayers/${openlayers.version}/img/&quot;"/>
                             </target>
                         </configuration>
                     </execution>
