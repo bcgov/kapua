@@ -37,7 +37,7 @@
         <dropwizard.version>3.1.2</dropwizard.version>
         <eclipselink.version>2.6.3</eclipselink.version>
         <findbugs.version>2.0.1</findbugs.version>
-        <guava.version>19.0</guava.version>
+        <guava.version>24.1.1-jre</guava.version>
         <guice.version>4.1.0</guice.version>
         <h2.version>1.4.192</h2.version>
         <javassist.version>3.19.0-GA</javassist.version>
@@ -158,7 +158,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore />
+                                        <ignore/>
                                     </action>
                                 </pluginExecution>
                                 <pluginExecution>
@@ -171,7 +171,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore />
+                                        <ignore/>
                                     </action>
                                 </pluginExecution>
                                 <pluginExecution>
@@ -184,7 +184,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore />
+                                        <ignore/>
                                     </action>
                                 </pluginExecution>
                                 <pluginExecution>
@@ -197,7 +197,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore />
+                                        <ignore/>
                                     </action>
                                 </pluginExecution>
                             </pluginExecutions>
